@@ -8,76 +8,69 @@ const BING_API_KEY = "AnnFbf6tMYlE4VRd4aMCg9M4vXSMGUyjvk0AQE-mI7ae-jmwiT2z41PO5Z
 const SPEED_UNIT = "KPH"; // MPH for miles per hour
 
 // returns img binary string
-const getSatelliteImage = function(msg) {
+const getSatelliteImage = async function(latitude, longitude) {
     var axios = require('axios');
-    let latitude = JSON.parse(msg.content)["latitude"];
-    let longitude = JSON.parse(msg.content)["longitude"];
     var config = {
     method: 'get',
     url: `http://dev.virtualearth.net/REST/v1/Imagery/Map/AerialWithLabels/${latitude},${longitude}/${ZOOM_LEVEL}?mapSize=${IMG_SIZE},${IMG_SIZE}&format=jpeg&key=${BING_API_KEY}`,
     headers: { }
     };
 
-    axios(config)
-    .then(function (response) {
+    const response = await axios(config)
+    //.then(function (response) {
         //console.log(JSON.stringify(response.data));
         console.log("map_utils.js => getSatelliteImage : Done ");
         return response.data;
-    })
-    .catch(function (error) {
-        console.log("map_utils.js => getSatelliteImage : ##ERROR ");
-        console.log(error);
-    });
+    // })
+    // .catch(function (error) {
+    //     console.log("map_utils.js => getSatelliteImage : ##ERROR ");
+    //     console.log(error);
+    // });
 }
 
 
-// returns array of int ex) [77]
-const getElevation = function(msg) {
+// returns array of int ex) 77
+const getElevation = async function(latitude, longitude) {
     var axios = require('axios');
-    let latitude = JSON.parse(msg.content)["latitude"];
-    let longitude = JSON.parse(msg.content)["longitude"];
     var config = {
     method: 'get',
     url: `http://dev.virtualearth.net/REST/v1/Elevation/List?points=${latitude},${longitude}&key=${BING_API_KEY}`,
     headers: { }
     };
 
-    axios(config)
-    .then(function (response) {
-        //console.log(JSON.stringify(response.data.resourceSets[0].resources[0].elevations));
+    const response = await axios(config)
+    //.then(function (response) {
+        console.log(JSON.stringify(response.data.resourceSets[0].resources[0].elevations[0]));
         console.log("map_utils.js => getElevation : Done ");
-        return JSON.stringify(response.data.resourceSets[0].resources[0].elevations);
-    })
-    .catch(function (error) {
-        console.log("map_utils.js => getElevation : ##ERROR ");
-        console.log(error);
-    });
+        return JSON.stringify(response.data.resourceSets[0].resources[0].elevations[0]);
+    //})
+    // .catch(function (error) {
+    //     console.log("map_utils.js => getElevation : ##ERROR ");
+    //     console.log(error);
+    // });
 }
 
 
 // returns int    ex)  50
-function getSpeedLimit(msg) {
+const getSpeedLimit = async function(latitude, longitude) {
     var axios = require('axios');
-    let latitude = JSON.parse(msg.content)["latitude"];
-    let longitude = JSON.parse(msg.content)["longitude"];
-
     var config = {
         method: 'get',
-        url: `https://dev.virtualearth.net/REST/v1/Routes/SnapToRoad?points=${longitude},${latitude}&includeSpeedLimit=true&includeTruckSpeedLimit=true&speedUnit=${SPEED_UNIT}&key=${BING_API_KEY}}`,
+        url: `https://dev.virtualearth.net/REST/v1/Routes/SnapToRoad?points=${latitude},${longitude}&includeSpeedLimit=true&includeTruckSpeedLimit=true&speedUnit=${SPEED_UNIT}&key=${BING_API_KEY}`,
         headers: { }
     };
 
-    axios(config)
-    .then(function (response) {
-        //console.log(response.data["resourceSets"][0]["resources"][0]["snappedPoints"][0]["speedLimit"]);
+    const response = await axios(config)
+    // .then(function (response) {
+        console.log(response.data["resourceSets"][0]["resources"][0]["snappedPoints"][0]["speedLimit"]);
         console.log("map_utils.js => getSpeedLimit : Done ");
         //console.log(response.data["resourceSets"][0]["resources"][0]["snappedPoints"][0]["truckSpeedLimit"]); //Truck speed also available
         return response.data["resourceSets"][0]["resources"][0]["snappedPoints"][0]["speedLimit"];
-    })
-    .catch(function (error) {
-        console.log("map_utils.js => getSpeedLimit : ##ERROR ");
-        console.log(error);
-    });
+    // })
+    // .catch(function (error) {
+    //     console.log("map_utils.js => getSpeedLimit : ##ERROR ");
+    //     console.log(error);
+    // });
 }
 
 
